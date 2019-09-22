@@ -3,14 +3,10 @@ from flask import Flask, render_template, redirect, request
 #from flask.ext.sqlalchemy import SQLAlchemy
 from flask_mysqldb import MySQL
 import pymysql
+import pymysql.cursors
 # Flask app
 app = Flask(__name__)
 mysql = MySQL(app)
-app.config['MYSQL_HOST'] = "127.0.0.1"
-app.config['MYSQL_USER'] = "dbuser"
-app.config['MYSQL_PASSWORD'] = "mypassword"
-app.config['MYSQL_DB'] = "democms"
-app.config['MYSQL_CURSORCLASS'] = "DictCursor"
 #app.debug = True
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s/data.db' % os.getcwd()
 #db = SQLAlchemy(app)
@@ -38,14 +34,19 @@ class Database:
         user = "dbuser"
         password = "mypassword"
         db = "democms"
-        self.con = pymysql.connect(host=host, user=user, password=password, db=db, cursorclass=pymysql.cursors.
-                                   DictCursor)
+        self.con = pymysql.connect(host=host, user=user, password=password, db=db, cursorclass=pymysql.cursors.DictCursor)
         self.cur = self.con.cursor()
     def list_blogs(self):
         self.cur.execute("SELECT * FROM pages")
         result = self.cur.fetchall()
         return result
 
+    def get_blog_by_id(self, page_id):
+        query_string = "SELECT * FROM pages WHERE id={} LIMIT 1".format(page_id)
+        print(query_string)
+        self.cur.execute(query_string)
+        result = self.cur.fetchall()
+        return result
 # app views
 @app.route('/')
 def index():
@@ -55,19 +56,23 @@ def index():
         return blogs
     pages = db_query()
 
-
-#    pages = db.session.query(Pages).all()
     return render_template('index.html', pages=pages, content_type="application/json")
 
 @app.route('/page/<int:page_id>')
 def view(page_id):
-    page = db.session.query(Pages).filter_by(id=page_id).first()
-    return render_template('page.html', id=page.id, title=page.title, content=page.content)
+    
+    def db_query(page_id):
+        db = Database()
+        blog= db.get_blog_by_id(page_id)
+        return blog
+    page = db_query(page_id)[0]
+    print(page)
+    return render_template('page.html', id=page['id'], title=page['title'], content=page['content'])
 
 @app.route('/edit/<int:page_id>')
 def edit(page_id):
     page = db.session.query(Pages).filter_by(id=page_id).first()
-    return render_template('edit.html', id=page.id, title=page.title, content=page.content)
+    return render_template('edit.html', id=page.id, title=page.title, content=page.conteynt)
 
 
 @app.route('/update/', methods=['POST'])
