@@ -52,8 +52,8 @@ class Database:
         query_string = "UPDATE pages SET title='{}', content='{}' WHERE id={}".format(title, content, page_id)
         print(query_string)
         self.cur.execute(query_string)
-        result = self.cur.fetchall()
-        return result
+        self.con.commit()
+        return True
 # app views
 @app.route('/')
 def index():
