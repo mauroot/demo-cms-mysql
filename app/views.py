@@ -119,7 +119,7 @@ def save():
         blog= db.create_blog(title, content)
         return True
     page_id = db_query(title,content)
-    return redirect('/page/%d' % page_id)
+    return redirect('/')
 
 @app.route('/delete/<int:page_id>')
 def delete(page_id):
