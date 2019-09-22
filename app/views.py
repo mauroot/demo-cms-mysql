@@ -2,10 +2,15 @@ import os
 from flask import Flask, render_template, redirect, request
 #from flask.ext.sqlalchemy import SQLAlchemy
 from flask_mysqldb import MySQL
-
+import pymysql
 # Flask app
 app = Flask(__name__)
 mysql = MySQL(app)
+app.config['MYSQL_HOST'] = "127.0.0.1"
+app.config['MYSQL_USER'] = "dbuser"
+app.config['MYSQL_PASSWORD'] = "mypassword"
+app.config['MYSQL_DB'] = "democms"
+app.config['MYSQL_CURSORCLASS'] = "DictCursor"
 #app.debug = True
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s/data.db' % os.getcwd()
 #db = SQLAlchemy(app)
@@ -36,20 +41,23 @@ class Database:
         self.con = pymysql.connect(host=host, user=user, password=password, db=db, cursorclass=pymysql.cursors.
                                    DictCursor)
         self.cur = self.con.cursor()
-    def list_employees(self):
-        self.cur.execute("SELECT first_name, last_name, gender FROM employees LIMIT 50")
+    def list_blogs(self):
+        self.cur.execute("SELECT * FROM pages")
         result = self.cur.fetchall()
         return result
 
 # app views
 @app.route('/')
 def index():
+    def db_query():
+        db = Database()
+        blogs = db.list_blogs()
+        return blogs
+    pages = db_query()
+
+
 #    pages = db.session.query(Pages).all()
-#    return render_template('index.html', pages=pages)
-    cur = mysql.connection.cursor()
-    cur.execute('''SELECT * FROM pages''')
-    rv = cur.fetchall()
-    return str(rv)
+    return render_template('index.html', pages=pages, content_type="application/json")
 
 @app.route('/page/<int:page_id>')
 def view(page_id):
