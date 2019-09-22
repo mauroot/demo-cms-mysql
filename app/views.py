@@ -53,8 +53,14 @@ class Database:
         print(query_string)
         self.cur.execute(query_string)
         self.con.commit()
-        return True
-# app views
+
+    def create_blog(self, title, content):
+        query_string = "INSERT INTO pages (title, content) VALUES ('{}','{}')".format(title, content)
+        print(query_string)
+        self.cur.execute(query_string)
+        self.con.commit()
+        return self.cur.lastrowid
+
 @app.route('/')
 def index():
     def db_query():
@@ -106,10 +112,14 @@ def new():
 
 @app.route('/save/', methods=['POST'])
 def save():
-    page = Pages(title=request.form['title'], content=request.form['content'])
-    db.session.add(page)
-    db.session.commit()
-    return redirect('/page/%d' % page.id)
+    title = request.form['title']
+    content=request.form['content']
+    def db_query(title, content):
+        db = Database()
+        blog= db.create_blog(title, content)
+        return True
+    page_id = db_query(title,content)
+    return redirect('/page/%d' % page_id)
 
 @app.route('/delete/<int:page_id>')
 def delete(page_id):

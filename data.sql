@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `pages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pages` (
-  `id` tinyint(4) DEFAULT NULL,
+  `id` tinyint(4) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `title` varchar(12) DEFAULT NULL,
   `content` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -35,7 +35,7 @@ CREATE TABLE `pages` (
 
 LOCK TABLES `pages` WRITE;
 /*!40000 ALTER TABLE `pages` DISABLE KEYS */;
-INSERT INTO `pages` VALUES (1,'Hello World!',''),(3,'Nueva Prueba','');
+INSERT INTO `pages` (title, content) VALUES ('Hello World!',''),('Nueva Prueba','');
 /*!40000 ALTER TABLE `pages` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
