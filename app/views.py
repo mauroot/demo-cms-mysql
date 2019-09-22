@@ -30,7 +30,7 @@ class Pages(db.Model):
 '''
 class Database:
     def __init__(self):
-        host = "127.0.0.1"
+        host = "mydb.cpgsf6tofdsd.us-east-1.rds.amazonaws.com"
         user = "dbuser"
         password = "mypassword"
         db = "democms"
