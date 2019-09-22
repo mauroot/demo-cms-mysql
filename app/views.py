@@ -47,6 +47,13 @@ class Database:
         self.cur.execute(query_string)
         result = self.cur.fetchall()
         return result
+
+    def update_blog(self, page_id, title, content):
+        query_string = "UPDATE pages SET title='{}', content='{}' WHERE id={}".format(title, content, page_id)
+        print(query_string)
+        self.cur.execute(query_string)
+        result = self.cur.fetchall()
+        return result
 # app views
 @app.route('/')
 def index():
@@ -85,8 +92,12 @@ def update():
     page_id = request.form['id']
     title = request.form['title']
     content = request.form['content']
-    db.session.query(Pages).filter_by(id=page_id).update({'title': title, 'content': content})
-    db.session.commit()
+    
+    def db_query(page_id, title, content):
+        db = Database()
+        blog= db.update_blog(page_id, title, content)
+        return True
+    db_query(page_id, title,content)
     return redirect('/page/'+page_id)
 
 @app.route('/new/')
