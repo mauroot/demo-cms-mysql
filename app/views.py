@@ -71,9 +71,14 @@ def view(page_id):
 
 @app.route('/edit/<int:page_id>')
 def edit(page_id):
-    page = db.session.query(Pages).filter_by(id=page_id).first()
-    return render_template('edit.html', id=page.id, title=page.title, content=page.conteynt)
 
+    def db_query(page_id):
+        db = Database()
+        blog= db.get_blog_by_id(page_id)
+        return blog
+    page = db_query(page_id)[0]
+    print(page)
+    return render_template('edit.html', id=page['id'], title=page['title'], content=page['content'])
 
 @app.route('/update/', methods=['POST'])
 def update():
